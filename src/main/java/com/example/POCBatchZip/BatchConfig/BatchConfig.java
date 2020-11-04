@@ -89,8 +89,6 @@ public class BatchConfig {
                             // Scorrere la cartella
                             Path dir = Paths.get("C:\\Users\\sdicostanzo\\Desktop\\DownFTP");
 
-                            List<ZipFile> zipFiles = new ArrayList<>();;
-
                             Stream<Path> walk = Files.walk(dir,1) ;
 
                             List <Path> listDir = walk.filter(p -> Files.isDirectory(p) && ! p.equals(dir))
@@ -106,7 +104,8 @@ public class BatchConfig {
                                     // Creare lo ZIP
                                     String nomeDir = Dir.toString().substring(Dir.toString().lastIndexOf("\\") + 1 );
                                     nomeDir += ".zip";
-                                    new ZipFile(nomeDir).addFolder(new File(listSubDir.toString()));
+                                    for(String subDir : listSubDir )
+                                        new ZipFile(nomeDir).addFolder(new File(subDir));
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
