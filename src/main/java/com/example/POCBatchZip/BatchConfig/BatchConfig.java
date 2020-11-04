@@ -2,6 +2,7 @@ package com.example.POCBatchZip.BatchConfig;
 
 
 
+import com.example.POCBatchZip.ZipUtil.ZipUtil;
 import net.lingala.zip4j.ZipFile;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -39,6 +40,9 @@ public class BatchConfig {
 
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
+
+    @Autowired
+    private ZipUtil zip;
 
 
 
@@ -101,11 +105,8 @@ public class BatchConfig {
                                     List <String> listSubDir = walk1.filter(p -> Files.isDirectory(p) && ! p.equals(dir) && ! listDir.contains(p))
                                             .map(x -> x.toString()).collect(Collectors.toList());
 
-                                    // Creare lo ZIP
-                                    String nomeDir = Dir.toString().substring(Dir.toString().lastIndexOf("\\") + 1 );
-                                    nomeDir += ".zip";
-                                    for(String subDir : listSubDir )
-                                        new ZipFile(nomeDir).addFolder(new File(subDir));
+                                    zip.createZip(Dir,listSubDir,dir);
+
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
