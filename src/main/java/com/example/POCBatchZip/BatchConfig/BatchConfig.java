@@ -48,7 +48,7 @@ public class BatchConfig {
     @Autowired
     private UpdownUtil updownUtil;
 
-    List<ZipFile> zipFiles;
+    List<List<ZipFile>> zipFiles = new ArrayList<>();
 
 
 
@@ -75,15 +75,15 @@ public class BatchConfig {
     @Bean
     public Flow splitFlow() {
         return new FlowBuilder<SimpleFlow>("splitFlow")
-                //.split(taskExecutor())
-                .start(flow())
+                .split(taskExecutor())
+                .add(flow1())
                 .build();
     }
 
 
 
     @Bean
-    public Flow flow() {
+    public Flow flow1() {
         return new FlowBuilder<SimpleFlow>("flow")
                 .start(step1())
                 .next(step2())
@@ -114,7 +114,7 @@ public class BatchConfig {
                                     /// createZip(ClasseDocumentale,Lista schede,Dir principale (ES: \DownFTP), limite schede)
                                     /// Una volta terminata la  creazione il file viene Uplodato sul server FTP
 
-                                    zipFiles = zip.createZips(Dir,listSubDir,dir,2);
+                                    zipFiles.add(zip.createZips(Dir,listSubDir,dir,2));
 
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -128,13 +128,16 @@ public class BatchConfig {
 
 
     /// Carichiamo lo ZIP Creato su FTP
-
     Step step2(){
         return stepBuilderFactory
                 .get("step2")
                 .tasklet((StepContribution contribution, ChunkContext chunk ) -> {
                             /// Prendi ZIP e carica su FTP
-                            updownUtil.uploadList(zipFiles);
+                            File[] files = new File("C:\\Users\\sdicostanzo\\Desktop\\DownFTP").listFiles();
+                            for (File file : files) {
+                                if (file.isFile())
+                                    updownUtil.upload(file);
+                            }
                             return RepeatStatus.FINISHED;
                         }
                 )

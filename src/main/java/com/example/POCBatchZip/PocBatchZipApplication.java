@@ -26,9 +26,8 @@ public class PocBatchZipApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception
 	{
 		JobParameters params = new JobParametersBuilder()
-				.addString("JobID", String.valueOf(System.currentTimeMillis()))
 				.toJobParameters();
-		jobLauncher.run(job, params);
+		jobLauncher.run(job,params);
 	}
 
 }

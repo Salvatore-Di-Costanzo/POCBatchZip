@@ -4,7 +4,6 @@ package com.example.POCBatchZip.ZipUtil;
 
 import com.example.POCBatchZip.UpDownUtil.UpdownUtil;
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +21,6 @@ public class ZipUtil {
 
     public void createZip(Path Dir, List<String> listSubDir, Path dir, int limit) throws IOException {
 
-        List<ZipFile> zipFiles = new ArrayList<>();
 
         if (listSubDir.size() > limit && limit > 0) {
             int index = 0, j = 0;
@@ -58,7 +56,8 @@ public class ZipUtil {
         List<ZipFile> zipFiles = new ArrayList<>();
 
         if (listSubDir.size() > limit && limit > 0) {
-            int index = 2, j = 0;
+            int index = 0;
+            int j = 0;
             // Creare lo ZIP
             String nomeDir = Dir.toString().substring(Dir.toString().lastIndexOf("\\") + 1);
             nomeDir += "_" + index + ".zip";
