@@ -105,7 +105,9 @@ public class BatchConfig {
                                     List <String> listSubDir = walk1.filter(p -> Files.isDirectory(p) && ! p.equals(dir) && ! listDir.contains(p))
                                             .map(x -> x.toString()).collect(Collectors.toList());
 
-                                    zip.createZip(Dir,listSubDir,dir);
+
+                                    /// createZip(ClasseDocumentale,Lista schede,Dir principale (ES: \DownFTP), limite schede)
+                                    zip.createZip(Dir,listSubDir,dir,2);
 
                                 } catch (IOException e) {
                                     e.printStackTrace();
