@@ -2,6 +2,7 @@ package com.example.POCBatchZip.BatchConfig;
 
 
 
+import com.example.POCBatchZip.UpDownUtil.UpdownUtil;
 import com.example.POCBatchZip.ZipUtil.ZipUtil;
 import net.lingala.zip4j.ZipFile;
 import org.springframework.batch.core.Job;
@@ -44,6 +45,11 @@ public class BatchConfig {
     @Autowired
     private ZipUtil zip;
 
+    @Autowired
+    private UpdownUtil updownUtil;
+
+    List<ZipFile> zipFiles;
+
 
 
     @Bean
@@ -69,8 +75,8 @@ public class BatchConfig {
     @Bean
     public Flow splitFlow() {
         return new FlowBuilder<SimpleFlow>("splitFlow")
-                .split(taskExecutor())
-                .add(flow())
+                //.split(taskExecutor())
+                .start(flow())
                 .build();
     }
 
@@ -80,7 +86,7 @@ public class BatchConfig {
     public Flow flow() {
         return new FlowBuilder<SimpleFlow>("flow")
                 .start(step1())
-                //.next(step2())
+                .next(step2())
                 .build();
     }
 
@@ -105,9 +111,10 @@ public class BatchConfig {
                                     List <String> listSubDir = walk1.filter(p -> Files.isDirectory(p) && ! p.equals(dir) && ! listDir.contains(p))
                                             .map(x -> x.toString()).collect(Collectors.toList());
 
-
                                     /// createZip(ClasseDocumentale,Lista schede,Dir principale (ES: \DownFTP), limite schede)
-                                    zip.createZip(Dir,listSubDir,dir,2);
+                                    /// Una volta terminata la  creazione il file viene Uplodato sul server FTP
+
+                                    zipFiles = zip.createZips(Dir,listSubDir,dir,2);
 
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -126,8 +133,8 @@ public class BatchConfig {
         return stepBuilderFactory
                 .get("step2")
                 .tasklet((StepContribution contribution, ChunkContext chunk ) -> {
-                            // crea zip
-
+                            /// Prendi ZIP e carica su FTP
+                            updownUtil.uploadList(zipFiles);
                             return RepeatStatus.FINISHED;
                         }
                 )
